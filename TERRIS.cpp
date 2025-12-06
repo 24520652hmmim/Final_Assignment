@@ -121,7 +121,6 @@ bool canMove(int dx, int dy){
             if (blocks[b][i][j] != ' '){
                 int tx = x + j + dx;
                 int ty = y + i + dy;
-                // ki?m tra ranh gi?i trong vùng choi (c?t 1..W-2, hàng 0..H-2)
                 if (tx < 1 || tx >= W-1 || ty >= H-1) return false;
                 if (ty >= 0 && board[ty][tx] != ' ') return false;
             }
@@ -149,7 +148,6 @@ int main()
             if ((c=='q' || c=='Q')) break;
         }
 
-        // roi t? d?ng
         if (canMove(0,1)) {
             y++;
         } else {
