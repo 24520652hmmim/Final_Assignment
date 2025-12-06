@@ -91,9 +91,8 @@ void draw(){
     }
 }
 
-// Hàm xóa dòng d?y và d?y các dòng phía trên xu?ng
 void removeLine() {
-    int i = H - 2; // t? hàng trên cùng c?a dáy (H-1 là biên dáy)
+    int i = H - 2; 
     while (i >= 0) {
         bool full = true;
         for (int j = 1; j <= W - 2; j++) {
@@ -101,18 +100,15 @@ void removeLine() {
         }
 
         if (full) {
-            // tang di?m (ví d? 100 cho 1 hàng)
             score += 100;
-
-            // d?y t?t c? hàng phía trên xu?ng 1
             for (int r = i; r > 0; r--) {
                 for (int c = 1; c <= W - 2; c++) {
                     board[r][c] = board[r-1][c];
                 }
             }
-            // làm r?ng hàng trên cùng (ph?n trong biên)
+          
             for (int c = 1; c <= W - 2; c++) board[0][c] = ' ';
-            // không gi?m i d? ki?m tra l?i hàng m?i t?i v? trí i
+            
         } else {
             i--;
         }
@@ -125,7 +121,6 @@ bool canMove(int dx, int dy){
             if (blocks[b][i][j] != ' '){
                 int tx = x + j + dx;
                 int ty = y + i + dy;
-                // ki?m tra ranh gi?i trong vùng choi (c?t 1..W-2, hàng 0..H-2)
                 if (tx < 1 || tx >= W-1 || ty >= H-1) return false;
                 if (ty >= 0 && board[ty][tx] != ' ') return false;
             }
@@ -153,19 +148,14 @@ int main()
             if ((c=='q' || c=='Q')) break;
         }
 
-        // roi t? d?ng
         if (canMove(0,1)) {
             y++;
         } else {
-            // dóng block vào board
             block2Board();
-            // ki?m tra và xóa dòng d?y
             removeLine();
-            // sinh block m?i ? v? trí ban d?u
             b = rand() % 7;
             x = 4;
             y = 0;
-            // n?u block m?i không th? n?m t?i v? trí b?t d?u -> game over
             if (!canMove(0,0)) {
                 gotoxy(0, H + 3);
                 cout << "\nGame Over! Final score: " << score << "\n";
