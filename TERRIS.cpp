@@ -179,6 +179,7 @@ void draw() {
     cout << "\nControls: A (Left), D (Right), S (Down), W (Rotate), Q (Quit)\n";
 }
 
+
 void removeLine() {
     int i = H - 2;
     while (i >= 0) {
@@ -270,4 +271,3 @@ int main()
     }
     return 0;
 }
-
