@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "c:/Users/ASUS/Final_Assignment",
-      "program": "c:/Users/ASUS/Final_Assignment/build/Debug/outDebug",
+      "cwd": "c:/Users/kakushi/Documents/GitHub/Final_Assignment",
+      "program": "c:/Users/kakushi/Documents/GitHub/Final_Assignment/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [
