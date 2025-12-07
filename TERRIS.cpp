@@ -191,7 +191,10 @@ void removeLine() {
         if (full) {
 
             score += 100;
-
+            if (delay > 30)
+            {
+            delay -= 10;
+            }
             for (int r = i; r > 0; r--) {
                 for (int c = 1; c <= W - 2; c++) {
                     board[r][c] = board[r - 1][c];
@@ -267,7 +270,8 @@ int main()
 
         block2Board();
         draw();
-        Sleep(200);
+        Sleep(delay);
     }
     return 0;
 }
+
