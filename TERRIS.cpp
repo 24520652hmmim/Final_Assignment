@@ -2,6 +2,7 @@
 #include <conio.h>
 #include <windows.h>
 #include <ctime>
+#include <cstdlib>   
 using namespace std;
 
 #define H 20
@@ -9,10 +10,7 @@ using namespace std;
 
 char board[H][W] = {};
 
-
 char currentBlock[4][4];
-
-
 char blocks[][4][4] = {
     {{' ','I',' ',' '},
      {' ','I',' ',' '},
@@ -46,6 +44,7 @@ char blocks[][4][4] = {
 
 int x = 4, y = 0, b = 0;
 int score = 0;
+int delay = 500; 
 
 void gotoxy(int x, int y) {
     COORD c = { (SHORT)x, (SHORT)y };
