@@ -237,7 +237,7 @@ int main()
             char c = _getch();
             if ((c == 'a' || c == 'A') && canMove(-1, 0)) x--;
             if ((c == 'd' || c == 'D') && canMove(1, 0)) x++;
-            if ( c == 's' || c == 'S') && canMove(0, 1)) y++;
+            if (( c == 's' || c == 'S') && canMove(0, 1)) y++;
             if ((c == 'w' || c == 'W')) rotateBlock();
             if ((c == 'q' || c == 'Q')) break;
         }
@@ -273,4 +273,5 @@ int main()
     }
     return 0;
 }
+
 
