@@ -11,7 +11,6 @@ using namespace std;
 char board[H][W] = {};
 
 char currentBlock[4][4];
-
 char blocks[][4][4] = {
     {{' ','I',' ',' '},
      {' ','I',' ',' '},
@@ -58,9 +57,11 @@ void loadBlock(int id) {
             currentBlock[i][j] = blocks[id][i][j];
 }
 
+
 inline bool inPlayable(int tx, int ty) {
     return (tx >= 1 && tx <= W - 2 && ty >= 0 && ty <= H - 2);
 }
+
 
 void boardDelBlock() {
     for (int i = 0; i < 4; i++) {
@@ -69,6 +70,7 @@ void boardDelBlock() {
                 int by = y + i;
                 int bx = x + j;
                 if (by >= 0 && by < H && bx >= 0 && bx < W) {
+
                     if (board[by][bx] == currentBlock[i][j]) {
                         board[by][bx] = ' ';
                     }
@@ -89,13 +91,16 @@ void block2Board() {
             }
 }
 
+
 bool canMove(int dx, int dy) {
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {
             if (currentBlock[i][j] != ' ') {
                 int tx = x + j + dx;
                 int ty = y + i + dy;
+
                 if (!inPlayable(tx, ty)) return false;
+
                 if (ty >= 0 && board[ty][tx] != ' ') return false;
             }
         }
@@ -103,19 +108,24 @@ bool canMove(int dx, int dy) {
     return true;
 }
 
+
 void rotateBlock() {
+  
     bool isO = (currentBlock[1][1] == 'O' && currentBlock[1][2] == 'O' &&
         currentBlock[2][1] == 'O' && currentBlock[2][2] == 'O');
     if (isO) return;
 
     char temp[4][4];
 
+   
     for (int i = 0; i < 4; i++)
         for (int j = 0; j < 4; j++)
             temp[j][3 - i] = currentBlock[i][j];
 
+    
     int kicks[] = { 0, -1, 1, -2, 2 };
 
+   
     for (int k = 0; k < (int)(sizeof(kicks) / sizeof(kicks[0])); k++) {
         int dx = kicks[k];
         bool ok = true;
@@ -132,6 +142,7 @@ void rotateBlock() {
         }
 
         if (ok) {
+           
             for (int i = 0; i < 4; i++)
                 for (int j = 0; j < 4; j++)
                     currentBlock[i][j] = temp[i][j];
@@ -139,6 +150,8 @@ void rotateBlock() {
             return;
         }
     }
+
+    
     return;
 }
 
@@ -165,6 +178,7 @@ void draw() {
     cout << "\nControls: A (Left), D (Right), S (Down), W (Rotate), Q (Quit)\n";
 }
 
+
 void removeLine() {
     int i = H - 2;
     while (i >= 0) {
@@ -174,14 +188,18 @@ void removeLine() {
         }
 
         if (full) {
+
             score += 100;
             if (delay > 30)
-                delay -= 10;
+            {
+            delay -= 10;
+            }
             for (int r = i; r > 0; r--) {
                 for (int c = 1; c <= W - 2; c++) {
                     board[r][c] = board[r - 1][c];
                 }
             }
+
             for (int c = 1; c <= W - 2; c++)
                 board[0][c] = ' ';
         }
@@ -194,16 +212,20 @@ void removeLine() {
 int main()
 {
     srand((unsigned)time(0));
+
     CONSOLE_CURSOR_INFO cursorInfo;
     GetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursorInfo);
     cursorInfo.bVisible = false;
     SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursorInfo);
+
     system("cls");
     initBoard();
+
     b = rand() % 7;
     loadBlock(b);
     x = W / 2 - 2;
     y = 0;
+
 
     block2Board();
     draw();
@@ -215,22 +237,26 @@ int main()
             char c = _getch();
             if ((c == 'a' || c == 'A') && canMove(-1, 0)) x--;
             if ((c == 'd' || c == 'D') && canMove(1, 0)) x++;
-            if ((c == 's' || c == 'S') && canMove(0, 1)) y++;
+            if ( c == 's' || c == 'S') && canMove(0, 1)) y++;
             if ((c == 'w' || c == 'W')) rotateBlock();
             if ((c == 'q' || c == 'Q')) break;
         }
+
 
         if (canMove(0, 1)) {
             y++;
         }
         else {
+
             block2Board();
             removeLine();
+
 
             b = rand() % 7;
             loadBlock(b);
             x = W / 2 - 2;
             y = 0;
+
 
             if (!canMove(0, 0)) {
                 block2Board();
