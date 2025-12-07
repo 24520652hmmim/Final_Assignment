@@ -37,7 +37,7 @@ Trò chơi **TETRIS** gồm:
 3. Khi một hàng được lấp đầy hoàn toàn:
    - Hàng đó sẽ biến mất.
    - Các hàng phía trên sẽ rơi xuống.
-   - Điểm số tăng thêm 10 cho mỗi hàng bị xóa.
+   - Điểm số tăng thêm 100 cho mỗi hàng bị xóa.
    - Tốc độ rơi sẽ tăng lên mỗi khi một hàng bị xóa
 
 4. Nếu khối gạch rơi chạm đáy hoặc chạm vào các khối đã cố định:
