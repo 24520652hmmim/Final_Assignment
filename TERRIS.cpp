@@ -51,6 +51,9 @@ void hideCursor() {
     ci.bVisible = FALSE;
     SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &ci);
 }     
+int dropDelay = 200;         
+const int minDropDelay = 50; 
+const int speedUpPerLine = 10; 
 void gotoxy(int x, int y) {
     COORD c = { (SHORT)x, (SHORT)y };
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), c);
@@ -66,6 +69,7 @@ void loadBlock(int id) {
 inline bool inPlayable(int tx, int ty) {
     return (tx >= 1 && tx <= W - 2 && ty >= 0 && ty <= H - 2);
 }
+
 void boardDelBlock() {
     for (int i = 0; i < 4; i++)
         for (int j = 0; j < 4; j++)
@@ -170,7 +174,6 @@ void draw() {
     cout << "\nControls: A (Left), D (Right), S (Down), W (Rotate), Q (Quit)\n";
 }
 
-
 void removeLine() {
     int i = H - 2;
     while (i >= 0) {
@@ -194,6 +197,12 @@ void removeLine() {
 
             for (int c = 1; c <= W - 2; c++)
                 board[0][c] = ' ';
+
+          
+            dropDelay -= speedUpPerLine;
+            if (dropDelay < minDropDelay) dropDelay = minDropDelay;
+
+            
         }
         else {
             i--;
@@ -225,7 +234,7 @@ int main()
             char c = _getch();
             if ((c == 'a' || c == 'A') && canMove(-1, 0)) x--;
             if ((c == 'd' || c == 'D') && canMove(1, 0)) x++;
-            if ( c == 's' || c == 'S') && canMove(0, 1)) y++;
+            if (( c == 's' || c == 'S') && canMove(0, 1)) y++;
             if ((c == 'w' || c == 'W')) rotateBlock();
             if ((c == 'q' || c == 'Q')) break;
         }
@@ -261,4 +270,6 @@ int main()
     }
     return 0;
 }
+
+
 
