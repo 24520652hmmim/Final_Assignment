@@ -44,27 +44,38 @@ char blocks[][4][4] = {
 
 int x = 4, y = 0, b = 0;
 int score = 0;
-int delay = 500; 
+int dropDelay = 200;    
 void hideCursor() {
     CONSOLE_CURSOR_INFO ci;
     ci.dwSize = 1;
     ci.bVisible = FALSE;
     SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &ci);
 }     
-int dropDelay = 200;         
-const int minDropDelay = 50; 
-const int speedUpPerLine = 10; 
 void gotoxy(int x, int y) {
     COORD c = { (SHORT)x, (SHORT)y };
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), c);
 }
+int menu() {
+    while (true) {
+        system("cls");
+        cout << "====== TETRIS ======\n";
+        cout << "1. Start Game\n";
+        cout << "2. Speed: Slow\n";
+        cout << "3. Speed: Normal\n";
+        cout << "4. Speed: Fast\n";
+        cout << "5. Exit\n";
+        cout << "====================\n";
+        cout << "Press 1-5";
 
+        char c = _getch();
+        if (c >= '1' && c <= '5') return c - '0';
+    }
+}
 void loadBlock(int id) {
     for (int i = 0; i < 4; i++)
         for (int j = 0; j < 4; j++)
             currentBlock[i][j] = blocks[id][i][j];
 }
-
 
 inline bool inPlayable(int tx, int ty) {
     return (tx >= 1 && tx <= W - 2 && ty >= 0 && ty <= H - 2);
@@ -76,17 +87,13 @@ void boardDelBlock() {
             if (currentBlock[i][j] != ' ')
                 board[y + i][x + j] = ' ';
 }
+
 void block2Board() {
     for (int i = 0; i < 4; i++)
         for (int j = 0; j < 4; j++)
-            if (currentBlock[i][j] != ' ') {
-                int by = y + i;
-                int bx = x + j;
-                if (by >= 0 && by < H && bx >= 0 && bx < W)
-                    board[by][bx] = currentBlock[i][j];
-            }
+            if (currentBlock[i][j] != ' ')
+                board[y + i][x + j] = currentBlock[i][j];
 }
-
 
 bool canMove(int dx, int dy) {
     for (int i = 0; i < 4; i++) {
@@ -103,7 +110,6 @@ bool canMove(int dx, int dy) {
     }
     return true;
 }
-
 
 void rotateBlock() {
     char t[4][4];
@@ -126,18 +132,14 @@ void initBoard() {
 void draw() {
     gotoxy(0, 0);
     cout << "Score: " << score << "\n\n";
-    for (int i = 0; i < H; i++, cout << endl) {
-        for (int j = 0; j < W; j++) {
-            if (board[i][j] == '#')
-                cout << "##";
-            else if (board[i][j] != ' ')
-                cout << "[]";
-            else
-                cout << "  ";
-        }
+    for (int i = 0; i < H; i++) {
+        for (int j = 0; j < W; j++)
+            cout << (board[i][j] == '#' ? "##" : board[i][j] != ' ' ? "[]" : "  ");
+        cout << "\n";
     }
-    cout << "\nControls: A (Left), D (Right), S (Down), W (Rotate), Q (Quit)\n";
+    cout << "\nA/D: Move  W: Rotate  S: Down  Q: Quit";
 }
+
 void removeLine() {
     for (int i = H - 2; i >= 0; i--) {
         bool full = true;
@@ -156,10 +158,19 @@ void removeLine() {
         }
     }
 }
-int main()
-{
+
+int main() {
     srand(time(0));
     hideCursor();
+
+    while (true) {
+        int c = menu();
+        if (c == 1) break;
+        if (c == 2) dropDelay = 400;
+        if (c == 3) dropDelay = 200;
+        if (c == 4) dropDelay = 100;
+        if (c == 5) return 0;
+    }
 
     system("cls");
     initBoard();
@@ -169,53 +180,40 @@ int main()
     x = W / 2 - 2;
     y = 0;
 
-
-    block2Board();
-    draw();
-
-    while (1) {
+    while (true) {
         boardDelBlock();
 
         if (_kbhit()) {
-            char c = _getch();
-            if ((c == 'a' || c == 'A') && canMove(-1, 0)) x--;
-            if ((c == 'd' || c == 'D') && canMove(1, 0)) x++;
-            if (( c == 's' || c == 'S') && canMove(0, 1)) y++;
-            if ((c == 'w' || c == 'W')) rotateBlock();
-            if ((c == 'q' || c == 'Q')) break;
+            char k = _getch();
+            if ((k == 'a' || k == 'A') && canMove(-1, 0)) x--;
+            if ((k == 'd' || k == 'D') && canMove(1, 0)) x++;
+            if ((k == 's' || k == 'S') && canMove(0, 1)) y++;
+            if (k == 'w' || k == 'W') rotateBlock();
+            if (k == 'q' || k == 'Q') break;
         }
 
-
-        if (canMove(0, 1)) {
-            y++;
-        }
+        if (canMove(0, 1)) y++;
         else {
-
             block2Board();
             removeLine();
-
 
             b = rand() % 7;
             loadBlock(b);
             x = W / 2 - 2;
             y = 0;
 
-
             if (!canMove(0, 0)) {
-                block2Board();
                 draw();
-                gotoxy(0, H + 3);
-                cout << "\nGame Over! Final score: " << score << "\n";
+                cout << "\nGAME OVER!";
+                _getch();
                 break;
             }
         }
 
         block2Board();
         draw();
-        Sleep(delay);
+        Sleep(dropDelay);
     }
     return 0;
 }
-
-
 
