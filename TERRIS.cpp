@@ -220,12 +220,8 @@ void removeLine() {
 
 int main()
 {
-    srand((unsigned)time(0));
-
-    CONSOLE_CURSOR_INFO cursorInfo;
-    GetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursorInfo);
-    cursorInfo.bVisible = false;
-    SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursorInfo);
+    srand(time(0));
+    hideCursor();
 
     system("cls");
     initBoard();
