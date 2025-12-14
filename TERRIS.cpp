@@ -45,7 +45,12 @@ char blocks[][4][4] = {
 int x = 4, y = 0, b = 0;
 int score = 0;
 int delay = 500; 
-
+void hideCursor() {
+    CONSOLE_CURSOR_INFO ci;
+    ci.dwSize = 1;
+    ci.bVisible = FALSE;
+    SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &ci);
+}     
 void gotoxy(int x, int y) {
     COORD c = { (SHORT)x, (SHORT)y };
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), c);
@@ -211,12 +216,8 @@ void removeLine() {
 
 int main()
 {
-    srand((unsigned)time(0));
-
-    CONSOLE_CURSOR_INFO cursorInfo;
-    GetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursorInfo);
-    cursorInfo.bVisible = false;
-    SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursorInfo);
+    srand(time(0));
+    hideCursor();
 
     system("cls");
     initBoard();
