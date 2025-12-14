@@ -165,20 +165,14 @@ void initBoard() {
 
 void draw() {
     gotoxy(0, 0);
-    cout << "Score: " << score << "\n\n";
-    for (int i = 0; i < H; i++, cout << endl) {
+    for (int i = 0; i < H; i++) {
         for (int j = 0; j < W; j++) {
-            if (board[i][j] == '#')
-                cout << "##";
-            else if (board[i][j] != ' ')
-                cout << "[]";
-            else
-                cout << "  ";
+            cout << board[i][j];
         }
+        cout << "\n";
     }
-    cout << "\nControls: A (Left), D (Right), S (Down), W (Rotate), Q (Quit)\n";
+    cout << "Score: " << score << "\n";
 }
-
 
 void removeLine() {
     int i = H - 2;
