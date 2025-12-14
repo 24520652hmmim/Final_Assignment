@@ -66,25 +66,12 @@ void loadBlock(int id) {
 inline bool inPlayable(int tx, int ty) {
     return (tx >= 1 && tx <= W - 2 && ty >= 0 && ty <= H - 2);
 }
-
-
 void boardDelBlock() {
-    for (int i = 0; i < 4; i++) {
-        for (int j = 0; j < 4; j++) {
-            if (currentBlock[i][j] != ' ') {
-                int by = y + i;
-                int bx = x + j;
-                if (by >= 0 && by < H && bx >= 0 && bx < W) {
-
-                    if (board[by][bx] == currentBlock[i][j]) {
-                        board[by][bx] = ' ';
-                    }
-                }
-            }
-        }
-    }
+    for (int i = 0; i < 4; i++)
+        for (int j = 0; j < 4; j++)
+            if (currentBlock[i][j] != ' ')
+                board[y + i][x + j] = ' ';
 }
-
 void block2Board() {
     for (int i = 0; i < 4; i++)
         for (int j = 0; j < 4; j++)
