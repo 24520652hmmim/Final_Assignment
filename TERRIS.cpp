@@ -45,7 +45,15 @@ char blocks[][4][4] = {
 int x = 4, y = 0, b = 0;
 int score = 0;
 int delay = 500; 
-
+void hideCursor() {
+    CONSOLE_CURSOR_INFO ci;
+    ci.dwSize = 1;
+    ci.bVisible = FALSE;
+    SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &ci);
+}     
+int dropDelay = 200;         
+const int minDropDelay = 50; 
+const int speedUpPerLine = 10; 
 void gotoxy(int x, int y) {
     COORD c = { (SHORT)x, (SHORT)y };
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), c);
@@ -62,24 +70,12 @@ inline bool inPlayable(int tx, int ty) {
     return (tx >= 1 && tx <= W - 2 && ty >= 0 && ty <= H - 2);
 }
 
-
 void boardDelBlock() {
-    for (int i = 0; i < 4; i++) {
-        for (int j = 0; j < 4; j++) {
-            if (currentBlock[i][j] != ' ') {
-                int by = y + i;
-                int bx = x + j;
-                if (by >= 0 && by < H && bx >= 0 && bx < W) {
-
-                    if (board[by][bx] == currentBlock[i][j]) {
-                        board[by][bx] = ' ';
-                    }
-                }
-            }
-        }
-    }
+    for (int i = 0; i < 4; i++)
+        for (int j = 0; j < 4; j++)
+            if (currentBlock[i][j] != ' ')
+                board[y + i][x + j] = ' ';
 }
-
 void block2Board() {
     for (int i = 0; i < 4; i++)
         for (int j = 0; j < 4; j++)
@@ -110,49 +106,14 @@ bool canMove(int dx, int dy) {
 
 
 void rotateBlock() {
-  
-    bool isO = (currentBlock[1][1] == 'O' && currentBlock[1][2] == 'O' &&
-        currentBlock[2][1] == 'O' && currentBlock[2][2] == 'O');
-    if (isO) return;
-
-    char temp[4][4];
-
-   
+    char t[4][4];
     for (int i = 0; i < 4; i++)
         for (int j = 0; j < 4; j++)
-            temp[j][3 - i] = currentBlock[i][j];
+            t[j][3 - i] = currentBlock[i][j];
 
-    
-    int kicks[] = { 0, -1, 1, -2, 2 };
-
-   
-    for (int k = 0; k < (int)(sizeof(kicks) / sizeof(kicks[0])); k++) {
-        int dx = kicks[k];
-        bool ok = true;
-
-        for (int i = 0; i < 4 && ok; i++) {
-            for (int j = 0; j < 4; j++) {
-                if (temp[i][j] != ' ') {
-                    int tx = x + j + dx;
-                    int ty = y + i;
-                    if (!inPlayable(tx, ty)) { ok = false; break; }
-                    if (ty >= 0 && board[ty][tx] != ' ') { ok = false; break; }
-                }
-            }
-        }
-
-        if (ok) {
-           
-            for (int i = 0; i < 4; i++)
-                for (int j = 0; j < 4; j++)
-                    currentBlock[i][j] = temp[i][j];
-            x += dx;
-            return;
-        }
-    }
-
-    
-    return;
+    for (int i = 0; i < 4; i++)
+        for (int j = 0; j < 4; j++)
+            currentBlock[i][j] = t[i][j];
 }
 
 void initBoard() {
@@ -177,46 +138,28 @@ void draw() {
     }
     cout << "\nControls: A (Left), D (Right), S (Down), W (Rotate), Q (Quit)\n";
 }
-
-
 void removeLine() {
-    int i = H - 2;
-    while (i >= 0) {
+    for (int i = H - 2; i >= 0; i--) {
         bool full = true;
-        for (int j = 1; j <= W - 2; j++) {
-            if (board[i][j] == ' ') { full = false; break; }
-        }
+        for (int j = 1; j <= W - 2; j++)
+            if (board[i][j] == ' ') full = false;
 
         if (full) {
-
             score += 100;
-            if (delay > 30)
-            {
-            delay -= 10;
-            }
-            for (int r = i; r > 0; r--) {
-                for (int c = 1; c <= W - 2; c++) {
+            for (int r = i; r > 0; r--)
+                for (int c = 1; c <= W - 2; c++)
                     board[r][c] = board[r - 1][c];
-                }
-            }
 
             for (int c = 1; c <= W - 2; c++)
                 board[0][c] = ' ';
-        }
-        else {
-            i--;
+            i++;
         }
     }
 }
-
 int main()
 {
-    srand((unsigned)time(0));
-
-    CONSOLE_CURSOR_INFO cursorInfo;
-    GetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursorInfo);
-    cursorInfo.bVisible = false;
-    SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursorInfo);
+    srand(time(0));
+    hideCursor();
 
     system("cls");
     initBoard();
@@ -237,7 +180,7 @@ int main()
             char c = _getch();
             if ((c == 'a' || c == 'A') && canMove(-1, 0)) x--;
             if ((c == 'd' || c == 'D') && canMove(1, 0)) x++;
-            if ( c == 's' || c == 'S') && canMove(0, 1)) y++;
+            if (( c == 's' || c == 'S') && canMove(0, 1)) y++;
             if ((c == 'w' || c == 'W')) rotateBlock();
             if ((c == 'q' || c == 'Q')) break;
         }
@@ -273,4 +216,6 @@ int main()
     }
     return 0;
 }
+
+
 
