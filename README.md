@@ -9,7 +9,8 @@ Người chơi điều khiển các khối rơi xuống, xoay và sắp xếp đ
 
 • **Môn học:** SS004.Q12 – Kỹ năng nghề nghiệp  
 • **Tên đồ án:** TETRIS GAME – Đồ án cuối kỳ  
--GVHD: ThS Nguyễn Văn Toàn 
+- GVHD: ThS Nguyễn Văn Toàn 
+
 • **Thành viên:**  
 – Nguyễn Việt Anh – 24520121  
 – Lê Minh Hiếu – 24520494  

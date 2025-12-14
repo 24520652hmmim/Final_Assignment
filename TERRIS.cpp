@@ -53,16 +53,50 @@ public:
 
     virtual ~Piece() {}
 
-    bool canMove(int dx, int dy)
-    {
-        for (int i = 0; i < 4; i++)
-        {
-            for (int j = 0; j < 4; j++)
-            {
-                if (shape[i][j] != ' ')
-                {
-                    int tx = x + j + dx;
-                    int ty = y + i + dy;
+char currentBlock[4][4];
+
+
+char blocks[][4][4] = {
+    {{' ','I',' ',' '},
+     {' ','I',' ',' '},
+     {' ','I',' ',' '},
+     {' ','I',' ',' '}},
+    {{' ',' ',' ',' '},
+     {' ','O','O',' '},
+     {' ','O','O',' '},
+     {' ',' ',' ',' '}},
+    {{' ',' ',' ',' '},
+     {' ','T',' ',' '},
+     {'T','T','T',' '},
+     {' ',' ',' ',' '}},
+    {{' ',' ',' ',' '},
+     {' ','S','S',' '},
+     {'S','S',' ',' '},
+     {' ',' ',' ',' '}},
+    {{' ',' ',' ',' '},
+     {'Z','Z',' ',' '},
+     {' ','Z','Z',' '},
+     {' ',' ',' ',' '}},
+    {{' ',' ',' ',' '},
+     {'J',' ',' ',' '},
+     {'J','J','J',' '},
+     {' ',' ',' ',' '}},
+    {{' ',' ',' ',' '},
+     {' ',' ','L',' '},
+     {'L','L','L',' '},
+     {' ',' ',' ',' '}}
+};
+
+int x = 4, y = 0, b = 0;
+int score = 0;
+int delay = 200;
+bool isPaused = false;
+
+
+void gotoxy(int x, int y) {
+    COORD c = { (SHORT)x, (SHORT)y };
+    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), c);
+}
 
                     if (!inPlayable(tx, ty))
                         return false;
@@ -343,6 +377,14 @@ void removeLine()
         }
     }
 }
+void pauseGame()
+{
+    gotoxy(W * 2 + 2, 5);
+    cout << "=== PAUSED ===";
+    gotoxy(W * 2 + 2, 6);
+    cout << "Press P to resume";
+}
+
 
 int main()
 {
@@ -366,54 +408,65 @@ int main()
     block2Board();
     draw();
 
-    clock_t lastTime = clock();
-
     while (1)
-    {
-        boardDelBlock();
+{
+    boardDelBlock();
 
-        if (_kbhit())
+    if (_kbhit())
+    {
+        char c = _getch();
+
+        // Pause / Resume
+        if (c == 'p' || c == 'P')
+            isPaused = !isPaused;
+
+        if (!isPaused)
         {
-            char c = _getch();
-            if ((c == 'a' || c == 'A') && currentPiece->canMove(-1, 0))
-                currentPiece->x--;
-            if ((c == 'd' || c == 'D') && currentPiece->canMove(1, 0))
-                currentPiece->x++;
-            if ((c == 's' || c == 'S') && currentPiece->canMove(0, 1))
-                currentPiece->y++;
-            if ((c == 'w' || c == 'W'))
-                currentPiece->rotate();
-            if ((c == 'q' || c == 'Q'))
-                break;
+            if ((c == 'a' || c == 'A') && canMove(-1, 0)) x--;
+            if ((c == 'd' || c == 'D') && canMove(1, 0)) x++;
+            if ((c == 's' || c == 'S') && canMove(0, 1)) y++;
+            if (c == 'w' || c == 'W') rotateBlock();
         }
 
-        if (currentPiece->canMove(0, 1))
-{
-    currentPiece->y++;
-}
-else
-{
-    block2Board();
-    removeLine();
+        if (c == 'q' || c == 'Q')
+            break;
+    }
 
-    delete currentPiece;
-    b = rand() % 7;
-    currentPiece = createPiece(b);
-
-    if (!currentPiece->canMove(0, 0))
+    if (!isPaused)
     {
-        block2Board();
-        draw();
-        gotoxy(0, H + 3);
-        cout << "\nGame Over! Final score: " << score << "\n";
-        break;
+        if (canMove(0, 1))
+        {
+            y++;
+        }
+        else
+        {
+            block2Board();
+            removeLine();
+
+            b = rand() % 7;
+            loadBlock(b);
+            x = W / 2 - 2;
+            y = 0;
+
+            if (!canMove(0, 0))
+            {
+                block2Board();
+                draw();
+                gotoxy(0, H + 3);
+                cout << "\nGame Over! Final score: " << score << "\n";
+                break;
+            }
+        }
     }
+
+    block2Board();
+    draw();
+
+    if (isPaused)
+        pauseGame();
+
+    Sleep(delay);
 }
 
-
-        block2Board();
-        draw();
-        Sleep(dropDelay);
-    }
     return 0;
 }
