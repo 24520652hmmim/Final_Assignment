@@ -106,49 +106,14 @@ bool canMove(int dx, int dy) {
 
 
 void rotateBlock() {
-  
-    bool isO = (currentBlock[1][1] == 'O' && currentBlock[1][2] == 'O' &&
-        currentBlock[2][1] == 'O' && currentBlock[2][2] == 'O');
-    if (isO) return;
-
-    char temp[4][4];
-
-   
+    char t[4][4];
     for (int i = 0; i < 4; i++)
         for (int j = 0; j < 4; j++)
-            temp[j][3 - i] = currentBlock[i][j];
+            t[j][3 - i] = currentBlock[i][j];
 
-    
-    int kicks[] = { 0, -1, 1, -2, 2 };
-
-   
-    for (int k = 0; k < (int)(sizeof(kicks) / sizeof(kicks[0])); k++) {
-        int dx = kicks[k];
-        bool ok = true;
-
-        for (int i = 0; i < 4 && ok; i++) {
-            for (int j = 0; j < 4; j++) {
-                if (temp[i][j] != ' ') {
-                    int tx = x + j + dx;
-                    int ty = y + i;
-                    if (!inPlayable(tx, ty)) { ok = false; break; }
-                    if (ty >= 0 && board[ty][tx] != ' ') { ok = false; break; }
-                }
-            }
-        }
-
-        if (ok) {
-           
-            for (int i = 0; i < 4; i++)
-                for (int j = 0; j < 4; j++)
-                    currentBlock[i][j] = temp[i][j];
-            x += dx;
-            return;
-        }
-    }
-
-    
-    return;
+    for (int i = 0; i < 4; i++)
+        for (int j = 0; j < 4; j++)
+            currentBlock[i][j] = t[i][j];
 }
 
 void initBoard() {
