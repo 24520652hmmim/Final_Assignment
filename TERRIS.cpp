@@ -2,6 +2,7 @@
 #include <conio.h>
 #include <windows.h>
 #include <ctime>
+#include <cstdlib>
 using namespace std;
 
 #define H 20
@@ -46,6 +47,9 @@ char blocks[][4][4] = {
 
 int x = 4, y = 0, b = 0;
 int score = 0;
+int delay = 200;
+bool isPaused = false;
+
 
 void gotoxy(int x, int y) {
     COORD c = { (SHORT)x, (SHORT)y };
@@ -165,14 +169,20 @@ void initBoard() {
 
 void draw() {
     gotoxy(0, 0);
-    for (int i = 0; i < H; i++) {
+    cout << "Score: " << score << "\n\n";
+    for (int i = 0; i < H; i++, cout << endl) {
         for (int j = 0; j < W; j++) {
-            cout << board[i][j];
+            if (board[i][j] == '#')
+                cout << "##";
+            else if (board[i][j] != ' ')
+                cout << "[]";
+            else
+                cout << "  ";
         }
-        cout << "\n";
     }
-    cout << "Score: " << score << "\n";
+    cout << "\nControls: A (Left), D (Right), S (Down), W (Rotate), Q (Quit)\n";
 }
+
 
 void removeLine() {
     int i = H - 2;
@@ -203,6 +213,14 @@ void removeLine() {
         }
     }
 }
+void pauseGame()
+{
+    gotoxy(W * 2 + 2, 5);
+    cout << "=== PAUSED ===";
+    gotoxy(W * 2 + 2, 6);
+    cout << "Press P to resume";
+}
+
 
 int main()
 {
@@ -225,35 +243,48 @@ int main()
     block2Board();
     draw();
 
-    while (1) {
-        boardDelBlock();
+    while (1)
+{
+    boardDelBlock();
 
-        if (_kbhit()) {
-            char c = _getch();
+    if (_kbhit())
+    {
+        char c = _getch();
+
+        // Pause / Resume
+        if (c == 'p' || c == 'P')
+            isPaused = !isPaused;
+
+        if (!isPaused)
+        {
             if ((c == 'a' || c == 'A') && canMove(-1, 0)) x--;
             if ((c == 'd' || c == 'D') && canMove(1, 0)) x++;
-            if ( c == 's' || c == 'S') && canMove(0, 1)) y++;
-            if ((c == 'w' || c == 'W')) rotateBlock();
-            if ((c == 'q' || c == 'Q')) break;
+            if ((c == 's' || c == 'S') && canMove(0, 1)) y++;
+            if (c == 'w' || c == 'W') rotateBlock();
         }
 
+        if (c == 'q' || c == 'Q')
+            break;
+    }
 
-        if (canMove(0, 1)) {
+    if (!isPaused)
+    {
+        if (canMove(0, 1))
+        {
             y++;
         }
-        else {
-
+        else
+        {
             block2Board();
             removeLine();
-
 
             b = rand() % 7;
             loadBlock(b);
             x = W / 2 - 2;
             y = 0;
 
-
-            if (!canMove(0, 0)) {
+            if (!canMove(0, 0))
+            {
                 block2Board();
                 draw();
                 gotoxy(0, H + 3);
@@ -261,11 +292,17 @@ int main()
                 break;
             }
         }
-
-        block2Board();
-        draw();
-        Sleep(delay);
     }
+
+    block2Board();
+    draw();
+
+    if (isPaused)
+        pauseGame();
+
+    Sleep(delay);
+}
+
     return 0;
 }
 
