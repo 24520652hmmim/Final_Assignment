@@ -45,8 +45,12 @@ char blocks[][4][4] = {
 int x = 4, y = 0, b = 0;
 int score = 0;
 int delay = 500; 
-
-
+void hideCursor() {
+    CONSOLE_CURSOR_INFO ci;
+    ci.dwSize = 1;
+    ci.bVisible = FALSE;
+    SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &ci);
+}     
 int dropDelay = 200;         
 const int minDropDelay = 50; 
 const int speedUpPerLine = 10; 
@@ -278,5 +282,6 @@ int main()
     }
     return 0;
 }
+
 
 
