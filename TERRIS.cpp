@@ -2,7 +2,7 @@
 #include <conio.h>
 #include <windows.h>
 #include <ctime>
-#include <cstdlib>   
+#include <cstdlib>
 using namespace std;
 
 #define H 20
@@ -10,76 +10,231 @@ using namespace std;
 
 char board[H][W] = {};
 
-char currentBlock[4][4];
-char blocks[][4][4] = {
-    {{' ','I',' ',' '},
-     {' ','I',' ',' '},
-     {' ','I',' ',' '},
-     {' ','I',' ',' '}},
-    {{' ',' ',' ',' '},
-     {' ','O','O',' '},
-     {' ','O','O',' '},
-     {' ',' ',' ',' '}},
-    {{' ',' ',' ',' '},
-     {' ','T',' ',' '},
-     {'T','T','T',' '},
-     {' ',' ',' ',' '}},
-    {{' ',' ',' ',' '},
-     {' ','S','S',' '},
-     {'S','S',' ',' '},
-     {' ',' ',' ',' '}},
-    {{' ',' ',' ',' '},
-     {'Z','Z',' ',' '},
-     {' ','Z','Z',' '},
-     {' ',' ',' ',' '}},
-    {{' ',' ',' ',' '},
-     {'J',' ',' ',' '},
-     {'J','J','J',' '},
-     {' ',' ',' ',' '}},
-    {{' ',' ',' ',' '},
-     {' ',' ','L',' '},
-     {'L','L','L',' '},
-     {' ',' ',' ',' '}}
-};
-
-int x = 4, y = 0, b = 0;
-int score = 0;
-int delay = 500; 
-void hideCursor() {
-    CONSOLE_CURSOR_INFO ci;
-    ci.dwSize = 1;
-    ci.bVisible = FALSE;
-    SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &ci);
-}     
-int dropDelay = 200;         
-const int minDropDelay = 50; 
-const int speedUpPerLine = 10; 
-void gotoxy(int x, int y) {
-    COORD c = { (SHORT)x, (SHORT)y };
-    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), c);
-}
-
-void loadBlock(int id) {
-    for (int i = 0; i < 4; i++)
-        for (int j = 0; j < 4; j++)
-            currentBlock[i][j] = blocks[id][i][j];
-}
-
-
-inline bool inPlayable(int tx, int ty) {
+// Forward declaration
+inline bool inPlayable(int tx, int ty)
+{
     return (tx >= 1 && tx <= W - 2 && ty >= 0 && ty <= H - 2);
 }
 
+class Piece
+{
+public:
+    char shape[4][4];
+    int x, y;
 
-void boardDelBlock() {
-    for (int i = 0; i < 4; i++) {
-        for (int j = 0; j < 4; j++) {
-            if (currentBlock[i][j] != ' ') {
-                int by = y + i;
-                int bx = x + j;
-                if (by >= 0 && by < H && bx >= 0 && bx < W) {
+    Piece()
+    {
+        for (int i = 0; i < 4; i++)
+            for (int j = 0; j < 4; j++)
+                shape[i][j] = ' ';
+        x = W / 2 - 2;
+        y = 0;
+    }
 
-                    if (board[by][bx] == currentBlock[i][j]) {
+    virtual ~Piece() {}
+
+    bool canMove(int dx, int dy)
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            for (int j = 0; j < 4; j++)
+            {
+                if (shape[i][j] != ' ')
+                {
+                    int tx = x + j + dx;
+                    int ty = y + i + dy;
+
+                    if (!inPlayable(tx, ty))
+                        return false;
+
+                    if (ty >= 0 && board[ty][tx] != ' ')
+                        return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    virtual void rotate()
+    {
+        char temp[4][4];
+        for (int i = 0; i < 4; i++)
+            for (int j = 0; j < 4; j++)
+                temp[j][3 - i] = shape[i][j];
+
+        int kicks[] = {0, -1, 1, -2, 2};
+
+        for (int k = 0; k < 5; k++)
+        {
+            int dx = kicks[k];
+            bool ok = true;
+
+            for (int i = 0; i < 4 && ok; i++)
+            {
+                for (int j = 0; j < 4; j++)
+                {
+                    if (temp[i][j] != ' ')
+                    {
+                        int tx = x + j + dx;
+                        int ty = y + i;
+                        if (!inPlayable(tx, ty))
+                        {
+                            ok = false;
+                            break;
+                        }
+                        if (ty >= 0 && board[ty][tx] != ' ')
+                        {
+                            ok = false;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (ok)
+            {
+                for (int i = 0; i < 4; i++)
+                    for (int j = 0; j < 4; j++)
+                        shape[i][j] = temp[i][j];
+                x += dx;
+                return;
+            }
+        }
+    }
+};
+
+class PieceI : public Piece
+{
+public:
+    PieceI()
+    {
+        shape[0][1] = 'I';
+        shape[1][1] = 'I';
+        shape[2][1] = 'I';
+        shape[3][1] = 'I';
+    }
+};
+
+class PieceO : public Piece
+{
+public:
+    PieceO()
+    {
+        shape[1][1] = 'O';
+        shape[1][2] = 'O';
+        shape[2][1] = 'O';
+        shape[2][2] = 'O';
+    }
+    void rotate() override {}
+};
+
+class PieceT : public Piece
+{
+public:
+    PieceT()
+    {
+        shape[1][1] = 'T';
+        shape[2][0] = 'T';
+        shape[2][1] = 'T';
+        shape[2][2] = 'T';
+    }
+};
+
+class PieceS : public Piece
+{
+public:
+    PieceS()
+    {
+        shape[1][1] = 'S';
+        shape[1][2] = 'S';
+        shape[2][0] = 'S';
+        shape[2][1] = 'S';
+    }
+};
+
+class PieceZ : public Piece
+{
+public:
+    PieceZ()
+    {
+        shape[1][0] = 'Z';
+        shape[1][1] = 'Z';
+        shape[2][1] = 'Z';
+        shape[2][2] = 'Z';
+    }
+};
+
+class PieceJ : public Piece
+{
+public:
+    PieceJ()
+    {
+        shape[1][0] = 'J';
+        shape[2][0] = 'J';
+        shape[2][1] = 'J';
+        shape[2][2] = 'J';
+    }
+};
+
+class PieceL : public Piece
+{
+public:
+    PieceL()
+    {
+        shape[1][2] = 'L';
+        shape[2][0] = 'L';
+        shape[2][1] = 'L';
+        shape[2][2] = 'L';
+    }
+};
+
+Piece *currentPiece = nullptr;
+
+Piece *createPiece(int id)
+{
+    switch (id)
+    {
+    case 0:
+        return new PieceI();
+    case 1:
+        return new PieceO();
+    case 2:
+        return new PieceT();
+    case 3:
+        return new PieceS();
+    case 4:
+        return new PieceZ();
+    case 5:
+        return new PieceJ();
+    case 6:
+        return new PieceL();
+    }
+    return new PieceI();
+}
+
+int score = 0;
+int delay = 500;
+
+void gotoxy(int x, int y)
+{
+    COORD c = {(SHORT)x, (SHORT)y};
+    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), c);
+}
+
+void boardDelBlock()
+{
+    for (int i = 0; i < 4; i++)
+    {
+        for (int j = 0; j < 4; j++)
+        {
+            if (currentPiece->shape[i][j] != ' ')
+            {
+                int by = currentPiece->y + i;
+                int bx = currentPiece->x + j;
+                if (by >= 0 && by < H && bx >= 0 && bx < W)
+                {
+                    if (board[by][bx] == currentPiece->shape[i][j])
+                    {
                         board[by][bx] = ' ';
                     }
                 }
@@ -88,93 +243,37 @@ void boardDelBlock() {
     }
 }
 
-void block2Board() {
+void block2Board()
+{
     for (int i = 0; i < 4; i++)
         for (int j = 0; j < 4; j++)
-            if (currentBlock[i][j] != ' ') {
-                int by = y + i;
-                int bx = x + j;
+            if (currentPiece->shape[i][j] != ' ')
+            {
+                int by = currentPiece->y + i;
+                int bx = currentPiece->x + j;
                 if (by >= 0 && by < H && bx >= 0 && bx < W)
-                    board[by][bx] = currentBlock[i][j];
+                    board[by][bx] = currentPiece->shape[i][j];
             }
 }
 
-
-bool canMove(int dx, int dy) {
-    for (int i = 0; i < 4; i++) {
-        for (int j = 0; j < 4; j++) {
-            if (currentBlock[i][j] != ' ') {
-                int tx = x + j + dx;
-                int ty = y + i + dy;
-
-                if (!inPlayable(tx, ty)) return false;
-
-                if (ty >= 0 && board[ty][tx] != ' ') return false;
-            }
-        }
-    }
-    return true;
-}
-
-
-void rotateBlock() {
-  
-    bool isO = (currentBlock[1][1] == 'O' && currentBlock[1][2] == 'O' &&
-        currentBlock[2][1] == 'O' && currentBlock[2][2] == 'O');
-    if (isO) return;
-
-    char temp[4][4];
-
-   
-    for (int i = 0; i < 4; i++)
-        for (int j = 0; j < 4; j++)
-            temp[j][3 - i] = currentBlock[i][j];
-
-    
-    int kicks[] = { 0, -1, 1, -2, 2 };
-
-   
-    for (int k = 0; k < (int)(sizeof(kicks) / sizeof(kicks[0])); k++) {
-        int dx = kicks[k];
-        bool ok = true;
-
-        for (int i = 0; i < 4 && ok; i++) {
-            for (int j = 0; j < 4; j++) {
-                if (temp[i][j] != ' ') {
-                    int tx = x + j + dx;
-                    int ty = y + i;
-                    if (!inPlayable(tx, ty)) { ok = false; break; }
-                    if (ty >= 0 && board[ty][tx] != ' ') { ok = false; break; }
-                }
-            }
-        }
-
-        if (ok) {
-           
-            for (int i = 0; i < 4; i++)
-                for (int j = 0; j < 4; j++)
-                    currentBlock[i][j] = temp[i][j];
-            x += dx;
-            return;
-        }
-    }
-
-    
-    return;
-}
-
-void initBoard() {
+void initBoard()
+{
     for (int i = 0; i < H; i++)
         for (int j = 0; j < W; j++)
-            if ((i == H - 1) || (j == 0) || (j == W - 1)) board[i][j] = '#';
-            else board[i][j] = ' ';
+            if ((i == H - 1) || (j == 0) || (j == W - 1))
+                board[i][j] = '#';
+            else
+                board[i][j] = ' ';
 }
 
-void draw() {
+void draw()
+{
     gotoxy(0, 0);
     cout << "Score: " << score << "\n\n";
-    for (int i = 0; i < H; i++, cout << endl) {
-        for (int j = 0; j < W; j++) {
+    for (int i = 0; i < H; i++, cout << endl)
+    {
+        for (int j = 0; j < W; j++)
+        {
             if (board[i][j] == '#')
                 cout << "##";
             else if (board[i][j] != ' ')
@@ -186,37 +285,40 @@ void draw() {
     cout << "\nControls: A (Left), D (Right), S (Down), W (Rotate), Q (Quit)\n";
 }
 
-void removeLine() {
+void removeLine()
+{
     int i = H - 2;
-    while (i >= 0) {
+    while (i >= 0)
+    {
         bool full = true;
-        for (int j = 1; j <= W - 2; j++) {
-            if (board[i][j] == ' ') { full = false; break; }
+        for (int j = 1; j <= W - 2; j++)
+        {
+            if (board[i][j] == ' ')
+            {
+                full = false;
+                break;
+            }
         }
 
-        if (full) {
-
+        if (full)
+        {
             score += 100;
-            if (delay > 30)
+            if (delay > 50)
+                delay -= 10;
+
+            for (int r = i; r > 0; r--)
             {
-            delay -= 10;
-            }
-            for (int r = i; r > 0; r--) {
-                for (int c = 1; c <= W - 2; c++) {
+                for (int c = 1; c <= W - 2; c++)
+                {
                     board[r][c] = board[r - 1][c];
                 }
             }
 
             for (int c = 1; c <= W - 2; c++)
                 board[0][c] = ' ';
-
-          
-            dropDelay -= speedUpPerLine;
-            if (dropDelay < minDropDelay) dropDelay = minDropDelay;
-
-            
         }
-        else {
+        else
+        {
             i--;
         }
     }
@@ -224,64 +326,73 @@ void removeLine() {
 
 int main()
 {
-    srand(time(0));
-    hideCursor();
+    srand((unsigned)time(0));
+
+    CONSOLE_CURSOR_INFO cursorInfo;
+    GetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursorInfo);
+    cursorInfo.bVisible = false;
+    SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursorInfo);
 
     system("cls");
     initBoard();
 
-    b = rand() % 7;
-    loadBlock(b);
-    x = W / 2 - 2;
-    y = 0;
-
+    int b = rand() % 7;
+    currentPiece = createPiece(b);
 
     block2Board();
     draw();
 
-    while (1) {
+    clock_t lastTime = clock();
+
+    while (1)
+    {
         boardDelBlock();
 
-        if (_kbhit()) {
+        if (_kbhit())
+        {
             char c = _getch();
-            if ((c == 'a' || c == 'A') && canMove(-1, 0)) x--;
-            if ((c == 'd' || c == 'D') && canMove(1, 0)) x++;
-            if (( c == 's' || c == 'S') && canMove(0, 1)) y++;
-            if ((c == 'w' || c == 'W')) rotateBlock();
-            if ((c == 'q' || c == 'Q')) break;
-        }
-
-
-        if (canMove(0, 1)) {
-            y++;
-        }
-        else {
-
-            block2Board();
-            removeLine();
-
-
-            b = rand() % 7;
-            loadBlock(b);
-            x = W / 2 - 2;
-            y = 0;
-
-
-            if (!canMove(0, 0)) {
-                block2Board();
-                draw();
-                gotoxy(0, H + 3);
-                cout << "\nGame Over! Final score: " << score << "\n";
+            if ((c == 'a' || c == 'A') && currentPiece->canMove(-1, 0))
+                currentPiece->x--;
+            if ((c == 'd' || c == 'D') && currentPiece->canMove(1, 0))
+                currentPiece->x++;
+            if ((c == 's' || c == 'S') && currentPiece->canMove(0, 1))
+                currentPiece->y++;
+            if ((c == 'w' || c == 'W'))
+                currentPiece->rotate();
+            if ((c == 'q' || c == 'Q'))
                 break;
+        }
+
+        if (clock() - lastTime > delay)
+        {
+            if (currentPiece->canMove(0, 1))
+            {
+                currentPiece->y++;
             }
+            else
+            {
+                block2Board();
+                removeLine();
+
+                delete currentPiece;
+                b = rand() % 7;
+                currentPiece = createPiece(b);
+
+                if (!currentPiece->canMove(0, 0))
+                {
+                    block2Board();
+                    draw();
+                    gotoxy(0, H + 3);
+                    cout << "\nGame Over! Final score: " << score << "\n";
+                    break;
+                }
+            }
+            lastTime = clock();
         }
 
         block2Board();
         draw();
-        Sleep(delay);
+        Sleep(50);
     }
     return 0;
 }
-
-
-
