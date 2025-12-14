@@ -138,43 +138,24 @@ void draw() {
     }
     cout << "\nControls: A (Left), D (Right), S (Down), W (Rotate), Q (Quit)\n";
 }
-
 void removeLine() {
-    int i = H - 2;
-    while (i >= 0) {
+    for (int i = H - 2; i >= 0; i--) {
         bool full = true;
-        for (int j = 1; j <= W - 2; j++) {
-            if (board[i][j] == ' ') { full = false; break; }
-        }
+        for (int j = 1; j <= W - 2; j++)
+            if (board[i][j] == ' ') full = false;
 
         if (full) {
-
             score += 100;
-            if (delay > 30)
-            {
-            delay -= 10;
-            }
-            for (int r = i; r > 0; r--) {
-                for (int c = 1; c <= W - 2; c++) {
+            for (int r = i; r > 0; r--)
+                for (int c = 1; c <= W - 2; c++)
                     board[r][c] = board[r - 1][c];
-                }
-            }
 
             for (int c = 1; c <= W - 2; c++)
                 board[0][c] = ' ';
-
-          
-            dropDelay -= speedUpPerLine;
-            if (dropDelay < minDropDelay) dropDelay = minDropDelay;
-
-            
-        }
-        else {
-            i--;
+            i++;
         }
     }
 }
-
 int main()
 {
     srand(time(0));
