@@ -160,10 +160,16 @@ void rotateBlock() {
 }
 
 void initBoard() {
-    for (int i = 0; i < H; i++)
-        for (int j = 0; j < W; j++)
-            if ((i == H - 1) || (j == 0) || (j == W - 1)) board[i][j] = '#';
-            else board[i][j] = ' ';
+    // Phủ toàn bộ bảng bằng khoảng trắng
+    memset(board, ' ', sizeof(board));
+
+    for (int i = 0; i < H; i++) {
+        for (int j = 0; j < W; j++) {
+            if (i == 0 || i == H - 1 || j == 0 || j == W - 1) {
+                board[i][j] = '#';
+            }
+        }
+    }
 }
 
 void draw() {
