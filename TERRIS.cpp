@@ -180,9 +180,17 @@ void pauseGame() {
 	cout << "Press P to resume";
 }
 
-void clearPauseMsg() {
-	gotoxy(W * 2 + 2, 5); cout << "              ";
-	gotoxy(W * 2 + 2, 6); cout << "                    ";
+void initBoard() {
+    // Phủ toàn bộ bảng bằng khoảng trắng
+    memset(board, ' ', sizeof(board));
+
+    for (int i = 0; i < H; i++) {
+        for (int j = 0; j < W; j++) {
+            if (i == 0 || i == H - 1 || j == 0 || j == W - 1) {
+                board[i][j] = '#';
+            }
+        }
+    }
 }
 
 void draw() {
@@ -231,84 +239,97 @@ void removeLine() {
 	}
 }
 
-int main() {
-	srand(time(0));
-	hideCursor();
-	PlaySound(TEXT("music.wav"), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
-	while (true) {
-		int c = menu();
-		if (c == 1) break;
-		if (c == 2) dropDelay = 400;
-		if (c == 3) dropDelay = 200;
-		if (c == 4) dropDelay = 50;
-		if (c == 5) return 0;
-	}
+void rotateBlock(char src[4][4], char dest[4][4]) {
+    for (int i = 0; i < 4; i++)
+        for (int j = 0; j < 4; j++)
+            dest[i][j] = src[4 - 1 - j][i];
+}
+bool canRotate(char src[4][4]) {
+    char temp[4][4];
+    rotateBlock(src, temp);
 
-	system("cls");
-	initBoard();
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            if (temp[i][j] != ' ') {
+                int tx = x + j;
+                int ty = y + i;
 
-	int b = rand() % 7;
-	currentPiece = createPiece(b);
+                if (tx < 1 || tx >= W - 1 || ty >= H - 1)
+                    return false;
+                if (board[ty][tx] != ' ')
+                    return false;
+            }
+        }
+    }
+    return true;
+}
 
-	block2Board();
-	draw();
 
-	while (true) {
-		if (!isPaused) boardDelBlock();
 
-		if (_kbhit()) {
-			char c = _getch();
 
-			if (c == 'p' || c == 'P') {
-				isPaused = !isPaused;
-				if (isPaused)
-				{
-					pauseGame();
-					PlaySound(NULL, 0, 0);
-				}
-				else
-				{
-					clearPauseMsg();
-					PlaySound(TEXT("music.wav"), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
-				}
-			}
+int main()
+{
+    srand((unsigned)time(0));
 
-			if (c == 'q' || c == 'Q') break;
+    CONSOLE_CURSOR_INFO cursorInfo;
+    GetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursorInfo);
+    cursorInfo.bVisible = false;
+    SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursorInfo);
 
-			if (!isPaused) {
-				if ((c == 'a' || c == 'A') && currentPiece->canMove(-1, 0)) currentPiece->x--;
-				if ((c == 'd' || c == 'D') && currentPiece->canMove(1, 0)) currentPiece->x++;
-				if ((c == 's' || c == 'S') && currentPiece->canMove(0, 1)) currentPiece->y++;
-				if ((c == 'w' || c == 'W')) currentPiece->rotate();
-			}
-		}
+    system("cls");
+    initBoard();
 
-		if (!isPaused) {
-			if (currentPiece->canMove(0, 1)) {
-				currentPiece->y++;
-			}
-			else {
-				block2Board();
-				removeLine();
+    b = rand() % 7;
+    loadBlock(b);
+    x = W / 2 - 2;
+    y = 0;
 
-				delete currentPiece;
-				b = rand() % 7;
-				currentPiece = createPiece(b);
 
-				if (!currentPiece->canMove(0, 0)) {
-					block2Board();
-					draw();
-					gotoxy(0, H + 3);
-					cout << "\nGame Over! Final score: " << score << "\n";
-					break;
-				}
-			}
-			block2Board();
-			draw();
-		}
+    block2Board();
+    draw();
 
-		Sleep(isPaused ? 100 : dropDelay);
-	}
+    while (1) {
+        boardDelBlock();
 
-	return 0;
-} 
+        if (_kbhit()) {
+            char c = _getch();
+            if ((c == 'a' || c == 'A') && canMove(-1, 0)) x--;
+            if ((c == 'd' || c == 'D') && canMove(1, 0)) x++;
+            if (( c == 's' || c == 'S') && canMove(0, 1)) y++;
+            if ((c == 'w' || c == 'W')) rotateBlock();
+            if ((c == 'q' || c == 'Q')) break;
+        }
+
+
+        if (canMove(0, 1)) {
+            y++;
+        }
+        else {
+
+            block2Board();
+            removeLine();
+
+
+            b = rand() % 7;
+            loadBlock(b);
+            x = W / 2 - 2;
+            y = 0;
+
+
+            if (!canMove(0, 0)) {
+                block2Board();
+                draw();
+                gotoxy(0, H + 3);
+                cout << "\nGame Over! Final score: " << score << "\n";
+                break;
+            }
+        }
+
+        block2Board();
+        draw();
+        Sleep(delay);
+    }
+    return 0;
+}
+
+
