@@ -5,13 +5,19 @@
 #include <cstdlib>
 #include <vector>
 #include <mmsystem.h>
+#include <string>
 
 using namespace std;
 
 #pragma comment(lib, "winmm.lib")
 
-#define H 20
-#define W 20
+// === THAY ĐỔI KÍCH THƯỚC Ở ĐÂY ===
+#define H 22  // Cao 22
+#define W 22  // Rộng 22
+// =================================
+
+#define START_X 4
+#define START_Y 2
 
 char board[H][W] = {};
 int score = 0;
@@ -31,6 +37,26 @@ void gotoxy(int x, int y) {
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), c);
 }
 
+void setColor(int color) {
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
+}
+
+void drawBorderBox(int x, int y, int w, int h) {
+    setColor(7);
+    gotoxy(x, y); cout << char(201);
+    for (int i = 0; i < w; i++) cout << char(205);
+    cout << char(187);
+
+    for (int i = 0; i < h; i++) {
+        gotoxy(x, y + 1 + i); cout << char(186);
+        gotoxy(x + w + 1, y + 1 + i); cout << char(186);
+    }
+
+    gotoxy(x, y + h + 1); cout << char(200);
+    for (int i = 0; i < w; i++) cout << char(205);
+    cout << char(188);
+}
+
 inline bool inPlayable(int tx, int ty) {
     return (tx >= 1 && tx <= W - 2 && ty < H - 1);
 }
@@ -38,14 +64,17 @@ inline bool inPlayable(int tx, int ty) {
 int menu() {
     while (true) {
         system("cls");
-        cout << "====== TETRIS GAME ======\n";
-        cout << "1. Start Game (Normal)\n";
-        cout << "2. Speed: Slow\n";
-        cout << "3. Speed: Normal\n";
-        cout << "4. Speed: Fast\n";
-        cout << "5. Exit\n";
-        cout << "=========================\n";
-        cout << "Choose (1-5): ";
+        setColor(11);
+        cout << "\n\n";
+        cout << "    TETRIS GAME \n";
+        cout << "   ==============\n\n";
+        setColor(7);
+        cout << "  1. Start Game \n";
+        cout << "  2. Speed: Slow\n";
+        cout << "  3. Speed: Normal\n";
+        cout << "  4. Speed: Fast\n";
+        cout << "  5. Exit\n\n";
+        cout << "  Select: ";
 
         char c = _getch();
         if (c >= '1' && c <= '5') return c - '0';
@@ -56,13 +85,16 @@ class Piece {
 public:
     char shape[4][4];
     int x, y;
+    int colorCode;
 
     Piece() {
         for (int i = 0; i < 4; i++)
             for (int j = 0; j < 4; j++)
                 shape[i][j] = ' ';
+        // Căn chỉnh vị trí xuất hiện ở giữa bảng
         x = W / 2 - 2;
         y = 0;
+        colorCode = 7;
     }
 
     virtual ~Piece() {}
@@ -73,7 +105,6 @@ public:
                 if (shape[i][j] != ' ') {
                     int tx = x + j + dx;
                     int ty = y + i + dy;
-
                     if (tx < 1 || tx >= W - 1 || ty >= H - 1) return false;
                     if (ty >= 0 && board[ty][tx] != ' ') return false;
                 }
@@ -111,15 +142,16 @@ public:
     }
 };
 
-class PieceI : public Piece { public: PieceI() { shape[1][0] = 'I'; shape[1][1] = 'I'; shape[1][2] = 'I'; shape[1][3] = 'I'; } };
-class PieceO : public Piece { public: PieceO() { shape[1][1] = 'O'; shape[1][2] = 'O'; shape[2][1] = 'O'; shape[2][2] = 'O'; } void rotate() override {} };
-class PieceT : public Piece { public: PieceT() { shape[1][1] = 'T'; shape[2][0] = 'T'; shape[2][1] = 'T'; shape[2][2] = 'T'; } };
-class PieceS : public Piece { public: PieceS() { shape[1][1] = 'S'; shape[1][2] = 'S'; shape[2][0] = 'S'; shape[2][1] = 'S'; } };
-class PieceZ : public Piece { public: PieceZ() { shape[1][0] = 'Z'; shape[1][1] = 'Z'; shape[2][1] = 'Z'; shape[2][2] = 'Z'; } };
-class PieceJ : public Piece { public: PieceJ() { shape[1][0] = 'J'; shape[2][0] = 'J'; shape[2][1] = 'J'; shape[2][2] = 'J'; } };
-class PieceL : public Piece { public: PieceL() { shape[1][2] = 'L'; shape[2][0] = 'L'; shape[2][1] = 'L'; shape[2][2] = 'L'; } };
+class PieceI : public Piece { public: PieceI() { colorCode = 11; shape[1][0] = 'I'; shape[1][1] = 'I'; shape[1][2] = 'I'; shape[1][3] = 'I'; } };
+class PieceO : public Piece { public: PieceO() { colorCode = 14; shape[1][1] = 'O'; shape[1][2] = 'O'; shape[2][1] = 'O'; shape[2][2] = 'O'; } void rotate() override {} };
+class PieceT : public Piece { public: PieceT() { colorCode = 13; shape[1][1] = 'T'; shape[2][0] = 'T'; shape[2][1] = 'T'; shape[2][2] = 'T'; } };
+class PieceS : public Piece { public: PieceS() { colorCode = 10; shape[1][1] = 'S'; shape[1][2] = 'S'; shape[2][0] = 'S'; shape[2][1] = 'S'; } };
+class PieceZ : public Piece { public: PieceZ() { colorCode = 12; shape[1][0] = 'Z'; shape[1][1] = 'Z'; shape[2][1] = 'Z'; shape[2][2] = 'Z'; } };
+class PieceJ : public Piece { public: PieceJ() { colorCode = 9;  shape[1][0] = 'J'; shape[2][0] = 'J'; shape[2][1] = 'J'; shape[2][2] = 'J'; } };
+class PieceL : public Piece { public: PieceL() { colorCode = 6;  shape[1][2] = 'L'; shape[2][0] = 'L'; shape[2][1] = 'L'; shape[2][2] = 'L'; } };
 
 Piece* currentPiece = nullptr;
+Piece* nextPiece = nullptr;
 
 Piece* createPiece(int id) {
     switch (id) {
@@ -132,6 +164,20 @@ Piece* createPiece(int id) {
     case 6: return new PieceL();
     }
     return new PieceI();
+}
+
+int getBlockColor(char type) {
+    switch (type) {
+    case 'I': return 11;
+    case 'O': return 14;
+    case 'T': return 13;
+    case 'S': return 10;
+    case 'Z': return 12;
+    case 'J': return 9;
+    case 'L': return 6;
+    case '#': return 8;
+    default: return 0;
+    }
 }
 
 void boardDelBlock() {
@@ -172,20 +218,74 @@ void initBoard() {
     }
 }
 
-void draw() {
-    gotoxy(0, 0);
-    cout << "Score: " << score << "   \n";
-    cout << "Combo: " << comboCount << "   \n\n";
+void drawNextPiece() {
+    int nextX = START_X + W * 2 + 5;
+    int nextY = START_Y + 1;
 
-    for (int i = 0; i < H; i++) {
-        for (int j = 0; j < W; j++) {
-            if (board[i][j] == '#') cout << "##";
-            else if (board[i][j] != ' ') cout << "[]";
-            else cout << " .";
-        }
-        cout << endl;
+    gotoxy(nextX, nextY - 1);
+    setColor(15); cout << "NEXT:";
+
+    // Clear area
+    for (int i = 0; i < 4; i++) {
+        gotoxy(nextX, nextY + i);
+        cout << "        ";
     }
-    cout << "\nControls: A/D/S (Move), W (Rotate), P (Pause), Q (Quit)\n";
+
+    if (nextPiece) {
+        setColor(nextPiece->colorCode);
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                if (nextPiece->shape[i][j] != ' ') {
+                    gotoxy(nextX + j * 2, nextY + i);
+                    cout << "[]";
+                }
+            }
+        }
+    }
+}
+
+void drawUI() {
+    int infoX = START_X + W * 2 + 5;
+
+    setColor(15);
+    gotoxy(infoX, START_Y + 6); cout << "SCORE:";
+    setColor(14);
+    gotoxy(infoX, START_Y + 7); cout << score;
+
+    setColor(15);
+    gotoxy(infoX, START_Y + 9); cout << "COMBO:";
+    if (comboCount > 1) setColor(12); else setColor(7);
+    gotoxy(infoX, START_Y + 10); cout << comboCount;
+
+    setColor(8);
+    gotoxy(infoX, START_Y + 13); cout << "CONTROLS:";
+    gotoxy(infoX, START_Y + 14); cout << "A/D : Move";
+    gotoxy(infoX, START_Y + 15); cout << "S   : Drop";
+    gotoxy(infoX, START_Y + 16); cout << "W   : Rotate";
+    gotoxy(infoX, START_Y + 17); cout << "P   : Pause";
+    gotoxy(infoX, START_Y + 18); cout << "Q   : Quit";
+}
+
+void drawBoard() {
+    for (int i = 0; i < H; i++) {
+        gotoxy(START_X, START_Y + i);
+        for (int j = 0; j < W; j++) {
+            char cell = board[i][j];
+            if (cell == '#') {
+                setColor(8);
+                if (i == H - 1) cout << "==";
+                else cout << "||";
+            }
+            else if (cell != ' ') {
+                setColor(getBlockColor(cell));
+                cout << "[]";
+            }
+            else {
+                setColor(0);
+                cout << " .";
+            }
+        }
+    }
 }
 
 void checkAndRemoveLines() {
@@ -203,7 +303,6 @@ void checkAndRemoveLines() {
 
         if (full) {
             linesClearedThisTurn++;
-
             for (int r = i; r > 0; r--) {
                 for (int c = 1; c <= W - 2; c++) {
                     board[r][c] = board[r - 1][c];
@@ -211,7 +310,6 @@ void checkAndRemoveLines() {
             }
             for (int c = 1; c <= W - 2; c++)
                 board[0][c] = ' ';
-
             if (dropDelay > 50) dropDelay -= 5;
         }
         else {
@@ -221,7 +319,6 @@ void checkAndRemoveLines() {
 
     if (linesClearedThisTurn > 0) {
         comboCount++;
-
         int baseScore = 0;
         switch (linesClearedThisTurn) {
         case 1: baseScore = 100; break;
@@ -230,10 +327,8 @@ void checkAndRemoveLines() {
         case 4: baseScore = 800; break;
         default: baseScore = 100 * linesClearedThisTurn;
         }
-
         int bonus = (comboCount - 1) * 50;
         if (bonus < 0) bonus = 0;
-
         score += baseScore + bonus;
     }
     else {
@@ -256,11 +351,15 @@ int main()
     system("cls");
     initBoard();
 
+    // Vẽ khung bao quanh, tự động co giãn theo W và H
+    drawBorderBox(START_X - 1, START_Y - 1, W * 2 + 1, H);
+
     PlaySound(TEXT("music.wav"), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
 
     currentPiece = createPiece(rand() % 7);
+    nextPiece = createPiece(rand() % 7);
+
     block2Board();
-    draw();
 
     while (true) {
         if (_kbhit()) {
@@ -276,17 +375,16 @@ int main()
                 if ((c == 's' || c == 'S') && currentPiece->canMove(0, 1)) currentPiece->y++;
                 if ((c == 'w' || c == 'W')) currentPiece->rotate();
                 block2Board();
-                draw();
             }
 
             if (c == 'q' || c == 'Q') break;
         }
 
         if (isPaused) {
-            gotoxy(W, 5);
-            cout << "=== PAUSED ===";
-            gotoxy(W, 6);
-            cout << "Press P to Resume";
+            // Tự động tính toán tâm của bảng (bất kể kích thước)
+            gotoxy(START_X + W - 4, START_Y + H / 2);
+            setColor(BACKGROUND_RED | FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+            cout << " PAUSED ";
             Sleep(100);
             continue;
         }
@@ -300,19 +398,31 @@ int main()
             checkAndRemoveLines();
 
             delete currentPiece;
-            currentPiece = createPiece(rand() % 7);
+            currentPiece = nextPiece;
+            nextPiece = createPiece(rand() % 7);
+
+            drawNextPiece();
 
             if (!currentPiece->canMove(0, 0)) {
                 block2Board();
-                draw();
-                gotoxy(0, H + 4);
-                cout << "=== GAME OVER ===\nFinal Score: " << score << "\n";
+                drawBoard();
+
+                // Tự động căn giữa chữ GAME OVER
+                gotoxy(START_X + W - 5, START_Y + H / 2);
+                setColor(BACKGROUND_RED | FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+                cout << " GAME OVER ";
+
+                gotoxy(START_X + W - 6, START_Y + H / 2 + 1);
+                setColor(BACKGROUND_BLUE | FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+                cout << " Score: " << score << " ";
                 break;
             }
         }
 
         block2Board();
-        draw();
+        drawBoard();
+        drawUI();
+        drawNextPiece();
         Sleep(dropDelay);
     }
 
