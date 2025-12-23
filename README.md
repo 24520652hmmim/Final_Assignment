@@ -1,53 +1,84 @@
-<h1 align="center">TETRIS GAME – Đồ án cuối kỳ</h1>
+# 🎮 TETRIS GAME – Đồ án cuối kỳ
 
-Dự án là một trò chơi Tetris dạng console/desktop, chạy trên Windows, Linux và macOS, được viết bằng C++. 
-Người chơi điều khiển các khối rơi xuống, xoay và sắp xếp để tạo thành hàng hoàn chỉnh, ghi điểm và tránh cho chồng khối chạm tới đỉnh màn hình.
+<div align="center">
+  <img src="https://img.shields.io/badge/C%2B%2B-00599C?style=for-the-badge&logo=c%2B%2B&logoColor=white" alt="C++ Badge"/>
+  <img src="https://img.shields.io/badge/Windows-0078D4?style=for-the-badge&logo=windows&logoColor=white" alt="Windows"/>
+  <img src="https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black" alt="Linux"/>
+  <img src="https://img.shields.io/badge/macOS-000000?style=for-the-badge&logo=apple&logoColor=white" alt="macOS"/>
+</div>
+
+<div align="center">
+  <pre>
+  ████████╗███████╗████████╗██████╗ ██╗███████╗
+  ╚══██╔══╝██╔════╝╚══██╔══╝██╔══██╗██║██╔════╝
+     ██║   █████╗     ██║   ██████╔╝██║███████╗
+     ██║   ██╔══╝     ██║   ██╔══██╗██║╚════██║
+     ██║   ███████╗   ██║   ██║  ██║██║███████║
+     ╚═╝   ╚══════╝   ╚═╝   ╚═╝  ╚═╝╚═╝╚══════╝
+  </pre>
+</div>
+
+## 🚀 Giới thiệu
+
+**Chào mừng đến với thế giới Tetris đầy màu sắc và kịch tính!** 🎉
+
+Dự án này là một trò chơi **Tetris** siêu đỉnh dạng console/desktop, được code bằng C++ rực lửa! 🔥 Hỗ trợ chạy mượt mà trên Windows, Linux và macOS. Bạn sẽ điều khiển những khối Tetromino bay lượn, xoay vòng như vũ công, sắp xếp chúng thành hàng hoàn hảo để ghi điểm như máy! Đừng để khối chồng cao quá đỉnh màn hình, hoặc... GAME OVER! 💥
 
 ---
 
-## 1. Thông tin nhóm
+## 👥 Thông tin nhóm
 
-• **Môn học:** SS004.Q12 – Kỹ năng nghề nghiệp  
-• **Tên đồ án:** TETRIS GAME – Đồ án cuối kỳ  
-- GVHD: ThS Nguyễn Văn Toàn 
+| **Môn học** | SS004.Q12 – Kỹ năng nghề nghiệp |
+|-------------|----------------------------------|
+| **Tên đồ án** | TETRIS GAME – Đồ án cuối kỳ |
+| **Giảng viên hướng dẫn** | ThS Nguyễn Văn Toàn |
 
-• **Thành viên:**  
-– Nguyễn Việt Anh – 24520121  
-– Lê Minh Hiếu – 24520494  
-– Trần Nguyễn Thuận Phát – 24521319  
-– Cao Minh Huy – 24520652  
-– Dương Tú Thanh – 24521619  
+### Thành viên nhóm siêu cấp:
+- 👨‍💻 **Nguyễn Việt Anh** – 24520121 (Leader coding mán!)
+- 👨‍💻 **Lê Minh Hiếu** – 24520494 (Chuyên gia logic!)
+- 👨‍💻 **Trần Nguyễn Thuận Phát** – 24521319 (Master debug!)
+- 👨‍💻 **Cao Minh Huy** – 24520652 (Thợ thiết kế!)
+- 👨‍💻 **Dương Tú Thanh** – 24521619 (Chuyên viên test!)
 
 ---
 
-## 2. Mô tả ngắn gọn
+## 🎯 Mô tả trò chơi
 
-Trò chơi **TETRIS** gồm:
+Trò chơi **TETRIS** với những cơ chế cực kỳ hấp dẫn:
 
-• Cơ chế tạo và rơi các khối (Tetromino).  
-• Xoay và di chuyển khối theo phím mũi tên hoặc WASD.  
-• Xóa hàng khi đầy, cộng điểm và tăng tốc độ theo cấp độ.  
-• Lưu điểm cao (tùy chọn).
-## 3. Cách chơi (Gameplay)
+- 🔲 **Tạo và rơi khối**: Khối Tetromino ngẫu nhiên xuất hiện như phép màu, rơi nhanh như chớp!
+- 🎮 **Điều khiển đỉnh cao**: Phím WASD hoặc mũi tên – di chuyển, xoay như siêu anh hùng!
+- 🗑️ **Xóa hàng bùng nổ**: Hàng đầy? BOOM! Biến mất, điểm tăng vọt, tốc độ tăng chóng mặt!
+- 🏆 **Lưu điểm cao**: Đỉnh điểm của bạn sẽ được lưu mãi mãi! (Tùy chọn)
 
-1. Khi chạy chương trình, một khối gạch (Tetromino) sẽ xuất hiện ở phía trên màn hình, vị trí ngẫu nhiên và bắt đầu rơi xuống.
+---
 
-2. Dùng các phím W/A/S/D để điều khiển:
-   - A: Di chuyển sang trái
-   - D: Di chuyển sang phải
+## 🕹️ Cách chơi (Gameplay) – Bắt đầu hành trình!
 
-3. Khi một hàng được lấp đầy hoàn toàn:
-   - Hàng đó sẽ biến mất.
-   - Các hàng phía trên sẽ rơi xuống.
-   - Điểm số tăng thêm 100 cho mỗi hàng bị xóa.
-   - Tốc độ rơi sẽ tăng lên mỗi khi một hàng bị xóa
+1. **Bắt đầu phiêu lưu**: Chạy chương trình và xem khối Tetromino đầu tiên xuất hiện như siêu sao! 🌟
 
-4. Nếu khối gạch rơi chạm đáy hoặc chạm vào các khối đã cố định:
-   - Khối sẽ được cố định lại.
-   - Một khối mới xuất hiện và tiếp tục rơi.
+2. **Điều khiển như boss**:
+   - ⬅️ **A**: Sang trái nhanh như gió!
+   - ➡️ **D**: Sang phải mạnh mẽ!
+   - 🔄 **W**: Xoay vòng ảo diệu!
+   - ⬇️ **S**: Rơi nhanh như tên lửa! (Tùy chọn)
 
-5. Trò chơi kết thúc khi các khối gạch chồng lên đến đỉnh màn hình.
-   
+3. **Xóa hàng đỉnh cao**: Hàng đầy? 
+   - **POOF!** Hàng biến mất trong chớp mắt!
+   - Các hàng trên rơi xuống như thác đổ!
+   - **+100 điểm** mỗi hàng – giàu nhanh chóng!
+   - Tốc độ tăng dần, adrenaline dâng trào!
+
+4. **Cố định khối**: Chạm đáy? Khối cố định ngay lập tức, khối mới sẵn sàng!
+
+5. **Kết thúc kịch tính**: Khối chồng đỉnh? GAME OVER! Thử lại để phá kỷ lục! 🔥
+
+---
+
+<div align="center">
+  <h2 style="color: #FF6B6B;">Chúc bạn chinh phục đỉnh cao Tetris! 🏔️🎊</h2>
+  <p><strong>Hãy tải về và chơi ngay! 🚀</strong></p>
+</div>
 
 
 
