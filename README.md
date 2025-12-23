@@ -157,13 +157,13 @@ Trò chơi **TETRIS** với những cơ chế cực kỳ hấp dẫn:
 | **Thời gian thực hiện** | Tháng 12/2025 |
 
 ### Thành viên nhóm siêu cấp:
-- 👨‍💻 **Nguyễn Việt Anh** – 24520121 (Team Leader, Core Logic)
-- 👨‍💻 **Lê Minh Hiếu** – 24520494 (Game Mechanics, Collision Detection)
-- 👨‍💻 **Trần Nguyễn Thuận Phát** – 24521319 (UI/Console Rendering, Input Handling)
-- 👨‍💻 **Cao Minh Huy** – 24520652 (Score System, File I/O)
-- 👨‍💻 **Dương Tú Thanh** – 24521619 (Testing, Documentation, Optimization)
+- 👨‍💻 **Nguyễn Việt Anh** – 24520121
+- 👨‍💻 **Lê Minh Hiếu** – 24520494 
+- 👨‍💻 **Trần Nguyễn Thuận Phát** – 
+- 👨‍💻 **Cao Minh Huy** – 24520652 
+- 👨‍💻 **Dương Tú Thanh** – 24521619 
 
-**Cảm ơn thầy Nguyễn Văn Toàn đã hướng dẫn tận tình! 🙏**
+
 
 ---
 
