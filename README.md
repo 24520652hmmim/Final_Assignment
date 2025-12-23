@@ -34,11 +34,11 @@ Dự án này là một trò chơi **Tetris** siêu đỉnh dạng console/deskt
 | **Giảng viên hướng dẫn** | ThS Nguyễn Văn Toàn |
 
 ### Thành viên nhóm siêu cấp:
-- 👨‍💻 **Nguyễn Việt Anh** – 24520121 (Leader coding mán!)
-- 👨‍💻 **Lê Minh Hiếu** – 24520494 (Chuyên gia logic!)
-- 👨‍💻 **Trần Nguyễn Thuận Phát** – 24521319 (Master debug!)
-- 👨‍💻 **Cao Minh Huy** – 24520652 (Thợ thiết kế!)
-- 👨‍💻 **Dương Tú Thanh** – 24521619 (Chuyên viên test!)
+- 👨‍💻 **Nguyễn Việt Anh** – 24520121 
+- 👨‍💻 **Lê Minh Hiếu** – 24520494 
+- 👨‍💻 **Trần Nguyễn Thuận Phát** – 24521319 
+- 👨‍💻 **Cao Minh Huy** – 24520652 
+- 👨‍💻 **Dương Tú Thanh** – 24521619 
 
 ---
 
